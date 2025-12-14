@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>7/28 Days</title>
+    <style media="screen">
+      html {padding: 0;margin: 0;}
+      body {display: grid;justify-content: center;place-items:center;min-width: 95%;padding: 10px;margin: 0;}
+      .clsBtn {background:transparent;font-weight:bold;border: none;position: absolute;top: 5%;right:5%;transition: 0.3s;font-size: 20px;}
+      .clsBtn:hover {color:red;cursor: pointer;}
+      .addinFrm {position:fixed;top:0;left:0;width:100%;height:100%;background: rgba(80,80,80,0.2);backdrop-filter:blur(15px);z-index: 2;}
+      .holDiv {position:absolute;top:50%;left:50%;background:white;display:grid;min-width:400px;min-height: 100px;
+        transform: translate(-50%,-50%);border-radius: 15px;justify-content: center;
+      }
+      .hrDiv {width:100%;position: relative;display: flex;min-height: 40px;justify-content: space-around;margin: 3px 10px;}
+      .addday {width: 250px;font-size: 1.2rem;border-radius: 10px;height: 50px;border: 1px solid rgb(20,200,120);transition: 0.2s;}
+      .addday:hover {background: rgb(20,200,120);color: white;cursor: pointer;}
+      .listDays {width: 80%;display: grid;justify-content: center;}
+      textarea {margin: 10px 0;width: 350px;height: 100px;}
+      .valent {border-radius: 10px;margin: 3px;min-width: 70px;padding: 0 10px;}
+      .setBtn {padding: 5px 50px;border-radius: 10px;height: 40px;border: 1px solid rgb(20,200,120);transition: 0.2s;}
+      .setBtn:hover {background: rgb(20,200,120);color: white;cursor: pointer;font-weight:bold;}
+      .seveghit {display: grid;height: 258px;overflow-y: scroll;}
+      .daysH {display: grid;}
+      .dayHSR {display: flex; border: 1px solid rgb(20,200,150); border-radius: 15px; margin: 3px 0;min-width: 400px;min-height: 80px;}
+      .dayHSRST {display: flex; border: 1px solid rgb(20, 250,20); border-radius: 15px; margin: 3px 0;min-width: 400px;min-height: 80px;
+        background-color: rgba(20, 250,20, 0.2);
+      }
+      .nDsv {display: grid;width: 25%;place-items:center;}
+      .nDsvp {font-weight: bold;}
+      .brdr {border: 1px solid red;}
+      .nDsvSR {display: grid;width: 74%;justify-content: flex-start;place-items:center;text-align: left;}
+      .nDsvSRp {text-align: left;}
+      .notificatins{position: fixed;padding: 20px;border-radius: 20px;border: 1px solid rgba(155,155,155,0.6);background: rgba(155,155,155,0.4);backdrop-filter:blur(15px);z-index: 20;display: grid;padding-top: 15px;top: 20px;right: -270px;min-width: 150px;max-width: 250px;}
+      .notificatinsf{position: fixed;padding: 20px;border-radius: 20px;border: 1px solid rgba(155,155,155,0.6);background: rgba(155,155,155,0.4);backdrop-filter:blur(15px);z-index: 20;display: grid;padding-top: 15px;top: -270px;right: 50%;min-width: 150px;transform: translateX(50%);}
+      .notifyclosy{background: transparent;font-weight: bolder;font-size: 20px;color: black;transition: 0.2s;position: absolute;top: 10px;left: 10px;cursor: pointer;border: none;}
+      .notifyclosy:hover{color: red;}
+      .notifytitle{color: rgb(100,100,100);font-weight: bold;font-size: 18px;text-align: center;margin:  20px 0 5px 0;}
+      .notifycontnt{color: rgba(100,100,100,0.95);margin:  5px 0 5px 0;}
+    </style>
+  </head>
+  <body id="karive">
+    <input type="button" class="addday" onclick="builder()" value="Add New!">
+    <div class="listDays" id="listDays"></br></div>
+  </body>
+  <script type="text/javascript">
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);//if phone its true
+    let windowHeight = window.innerHeight - 60;let histore = "", docu = new Object();
+    var windowWidth = window.innerWidth;
+    if (typeof(Storage) !== "undefined") {
+      //window.localStorage.setItem("histore", null);
+      tmp_hstr = window.localStorage.getItem("histore");
+      if (tmp_hstr != undefined && tmp_hstr != null) {
+        histore = tmp_hstr;
+        semi_docu = histore.split("@#@");
+        for (var i = 0; i < semi_docu.length; i++) {
+          let sub_seg = semi_docu[i].split("||");
+          if (semi_docu[i] != "") {
+            docu[sub_seg[0]] = [sub_seg[1], sub_seg[2]];
+          }
+        }
+        startListing();
+      }
+    }
+    document.getElementById('listDays').setAttribute("style", "max-height: " + windowHeight + "px;");
+    function creatanelemn(kng, clss, id, name, style, title, type, value, elem, onclick, disabled, innertext) {
+      //creatanelemn("kng", "clss", "id", "name", "style", "title", "type", "value", "elem", "onclick", "disabled", "innertext");
+      const kingbck = document.createElement(kng)
+      if (clss != "") {
+        kingbck.setAttribute('class', clss);
+      }
+      if (id != "") {
+        kingbck.setAttribute('id', id);
+      }
+      if (name != "") {
+        kingbck.setAttribute('name', name);
+      }
+      if (style != "") {
+        kingbck.setAttribute('style', style);
+      }
+      if (title != "") {
+        kingbck.setAttribute('title', title);
+      }
+      if (type != "") {
+        kingbck.setAttribute('type', type);
+      }
+      if (value != "") {
+        kingbck.setAttribute('value', value);
+      }
+      if (onclick != "") {
+        kingbck.setAttribute('onclick', onclick);
+      }
+      if (disabled != "") {
+        kingbck.setAttribute('disabled', disabled);
+      }
+      if (innertext != "") {
+        kingbck.innerText = innertext;
+      }
+      if (elem != "") {
+        kingbck.appendChild(elem);
+      }
+      return kingbck
+    }
+    function builder() {
+      let xBtn = creatanelemn("input", "clsBtn", "", "", "", "", "button", "X", "", "closePanel('addinFrm')", "", "");
+      let xPara = creatanelemn("p", "", "", "", "", "", "", "", "", "", "", "Adding Element!");
+      let hrDer = creatanelemn("div", "hrDiv", "", "", "", "", "", "", xBtn, "", "", "");
+      hrDer.appendChild(xPara);
+      let holDer = creatanelemn("div", "holDiv", "", "", "", "", "", "", hrDer, "", "", "");
+      let d = new Date(), arrDs = ["DD/31", "MM/12", "YYYY/"+(d.getFullYear() - 1)];
+      let today = [d.getDate(), (d.getMonth() + 1), d.getFullYear()];
+      let sements = ["Name", "Date", "Comment"];
+      for (var i = 0; i < sements.length; i++) {
+        let hrDerSR = creatanelemn("div", "hrDiv", "", "", "", "", "", "", "", "", "", "");
+        let nam = sements[i] + ": ";
+        if (i == 0) {
+          let xP = creatanelemn("p", "", "", "", "", "", "", "", "", "", "", nam);
+          let xBtnSR = creatanelemn("input", "valent", sements[i], "", "", "", "text", "", "", "", "", "");
+          hrDerSR.appendChild(xP);hrDerSR.appendChild(xBtnSR);
+        }
+        else if (i == 1) {
+          let xP = creatanelemn("p", "", "", "", "", "", "", "", "", "", "", nam);
+          hrDerSR.appendChild(xP);
+          for (var x = 0; x < arrDs.length; x++) {
+            let sg = arrDs[x].split("/");
+            if (x != 2) {
+              let xBtnSR = creatanelemn("select", "valent", sg[0], "", "", "", "", "", "", "", "", "");
+              for (var z = 0; z < eval(sg[1]); z++) {
+                let val = z + 1;
+                let xOption = creatanelemn("option", "valent", "", "", "", "", "", "", "", "", "", val);
+                xBtnSR.appendChild(xOption);
+              }
+              xBtnSR.value = today[x];
+              hrDerSR.appendChild(xBtnSR);
+            }
+            else {
+              let xBtnSR = creatanelemn("select", "valent", sg[0], "", "", "", "", "", "", "", "", "");
+              let val = eval(sg[1]);
+              for (var z = 0; z < 3; z++) {
+                let xOption = creatanelemn("option", "valent", "", "", "", "", "", "", "", "", "", val);
+                val++;
+                xBtnSR.appendChild(xOption);
+              }
+              xBtnSR.value = today[x];
+              hrDerSR.appendChild(xBtnSR);
+            }
+          }
+        }
+        else {
+          let xP = creatanelemn("p", "", "", "", "", "", "", "", "", "", "", nam);
+          let xBtnSR = creatanelemn("textarea", "coment", sements[i], "", "", "", "", "", "", "", "", "");
+          hrDerSR.setAttribute("style", "display:grid;")
+          hrDerSR.appendChild(xP);hrDerSR.appendChild(xBtnSR);
+        }
+        holDer.appendChild(hrDerSR);
+      }
+      let xSubmit = creatanelemn("input", "setBtn", "", "", "", "", "button", "Submit!", "", "submitForm()", "", "");
+      let hrDerST = creatanelemn("div", "hrDiv", "", "", "", "", "", "", xSubmit, "", "", "");
+      holDer.appendChild(hrDerST);
+      let bckDer = creatanelemn("div", "addinFrm", "addinFrm", "", "", "", "", "", holDer, "", "", "");
+      document.getElementsByTagName('body')[0].appendChild(bckDer);
+    }
+    function submitForm(id) {
+      let datearr = ["DD", "MM", "YYYY"], datesen = "";
+      for (var i = 0; i < datearr.length; i++) {
+        if (i != 2) {
+          datesen += document.getElementById(datearr[i]).value + "/";
+        }
+        else {
+          datesen += document.getElementById(datearr[i]).value;
+        }
+      }
+      let daTa = {"Date":datesen}, prop = ["Name", "Comment"];
+      for (var i = 0; i < prop.length; i++) {
+        daTa[prop[i]] = document.getElementById(prop[i]).value;
+      }
+      let log = daTa["Name"] + "||" + daTa["Date"] + "||" + daTa["Comment"];
+      histore += log + "@#@";
+      ////keep an eye out here 1111111
+      docu[daTa["Name"]] = [daTa["Date"], daTa["Comment"]];
+      startListing();closePanel("addinFrm");
+    }
+    function startListing() {
+      let dates = new Object();let docKeys = Object.keys(docu);
+      for (var i = 0; i < docKeys.length; i++) {
+        let date = docu[docKeys[i]][0];
+        if (dates[date] === undefined) {
+          dates[date] = [docKeys[i]];
+        }
+        else {
+          dates[date].push(docKeys[i]);
+        }
+      }
+      dtsKys = Object.keys(dates);
+      dtsKys.sort(dateComparator);
+      let seven_days = new Object(), twght_days = new Object();
+      let mnts_len = [31,28,31,30,31,30,31,31,30,31,30,31];let start7Dating = false,start28Dating = false;
+      for (var i = 0; i < dtsKys.length; i++) {
+        let parts = dtsKys[i].split("/");
+        let next_day = eval(parts[0]) + 7;
+        let next_28day = eval(parts[0]) + 28;
+        let this_mnth = eval(parts[1]) - 1;
+        if (!start28Dating) {
+          ////////handle 28 days
+          date28Days = new Array();
+          if (next_28day > mnts_len[this_mnth]) {
+            next_dayDT = next_28day - mnts_len[this_mnth];
+            let next_mnth = this_mnth + 1;
+            if (next_mnth < mnts_len.length) {
+              date28Days[0] = next_dayDT;
+              date28Days[1] = next_mnth + 1;
+              date28Days[2] = eval(parts[2]);
+            }
+            else {
+              date28Days[0] = next_dayDT;
+              date28Days[1] = 1;
+              date28Days[2] = eval(parts[2]) + 1;
+            }
+          }
+          else {
+            date28Days[0] = next_28day;
+            date28Days[1] = eval(parts[1]);
+            date28Days[2] = eval(parts[2]);
+          }
+          ////////////////////////////////////////
+          const d = new Date();
+          let today = [d.getDate(), (d.getMonth() + 1), d.getFullYear()];
+          if (date28Days[2] > today[2]) {
+            start28Dating = true;
+          }
+          else if (date28Days[2] == today[2]) {
+            if (date28Days[1] > today[1]) {
+              start28Dating = true;
+            }
+            else if (date28Days[1] == today[1]) {
+              if (date28Days[0] >= today[0]) {
+                start28Dating = true;
+              }
+            }
+          }
+        }
+        if (!start7Dating) {
+          ////////handle 7 days
+          date7Days = new Array();
+          if (next_day > mnts_len[this_mnth]) {
+            next_dayDT = next_day - mnts_len[this_mnth];
+            let next_mnth = this_mnth + 1;
+            if (next_mnth < mnts_len.length) {
+              date7Days[0] = next_dayDT;
+              date7Days[1] = next_mnth + 1;
+              date7Days[2] = eval(parts[2]);
+            }
+            else {
+              date7Days[0] = next_dayDT;
+              date7Days[1] = 1;
+              date7Days[2] = eval(parts[2]) + 1;
+            }
+          }
+          else {
+            date7Days[0] = next_day;
+            date7Days[1] = eval(parts[1]);
+            date7Days[2] = eval(parts[2]);
+          }
+          ////////////////////////////////////////
+          const d = new Date();
+          let today = [d.getDate(), (d.getMonth() + 1), d.getFullYear()];
+          if (date7Days[2] > today[2]) {
+            start7Dating = true;
+          }
+          else if (date7Days[2] == today[2]) {
+            if (date7Days[1] > today[1]) {
+              start7Dating = true;
+            }
+            else if (date7Days[1] == today[1]) {
+              if (date7Days[0] >= today[0]) {
+                start7Dating = true;
+              }
+            }
+          }
+        }
+        if (start7Dating) {
+          //seven days
+          if (next_day <= mnts_len[this_mnth]) {
+            let full_date = next_day + "/" + parts[1] + "/" + parts[2];
+            seven_days[full_date] = dates[dtsKys[i]];
+          }
+          else {
+            next_day = next_day - mnts_len[this_mnth];
+            next_mnt = eval(parts[1]) + 1;
+            next_yer = eval(parts[2]);
+            if (next_mnt > mnts_len.length) {
+              next_mnt = 1;
+              next_yer++;
+            }
+            let full_date = next_day + "/" + next_mnt + "/" + next_yer;
+            seven_days[full_date] = dates[dtsKys[i]];
+          }
+        }
+        if (start28Dating) {
+          //twenty-eight days
+          if (next_28day <= mnts_len[this_mnth]) {
+            let full_date = next_28day + "/" + parts[1] + "/" + parts[2];
+            twght_days[full_date] = dates[dtsKys[i]];
+          }
+          else {
+            next_28day = next_28day - mnts_len[this_mnth];
+            next_mnt = eval(parts[1]) + 1;
+            next_yer = eval(parts[2]);
+            if (next_mnt > mnts_len.length) {
+              next_mnt = 1;
+              next_yer++;
+            }
+            let full_date = next_28day + "/" + next_mnt + "/" + next_yer;
+            twght_days[full_date] = dates[dtsKys[i]];
+          }
+        }
+      }
+      ///add foreach
+      let seday = Object.keys(seven_days);
+      let ghday = Object.keys(twght_days);
+      let totsKeys = new Object();
+      for (var i = 0; i < seday.length; i++) {
+        if (totsKeys[seday[i]] === undefined) {
+          totsKeys[seday[i]] = 1;
+        }
+        else {
+          totsKeys[seday[i]]++;
+        }
+      }
+      for (var i = 0; i < ghday.length; i++) {
+        if (totsKeys[ghday[i]] === undefined) {
+          totsKeys[ghday[i]] = 1;
+        }
+        else {
+          totsKeys[ghday[i]]++;
+        }
+      }
+      let keysTotsKeys = Object.keys(totsKeys);
+      keysTotsKeys.sort(dateComparator);
+      try {
+        document.getElementsByClassName('daysH')[0].remove();
+      } catch (e) {} finally {}
+      let holDer = creatanelemn("div", "daysH", "", "", "", "", "", "", "", "", "", "");
+      for (var i = 0; i < keysTotsKeys.length; i++) {
+        let classy = "dayHSR"
+        if (i == 0) {
+          classy = "dayHSRST";
+        }
+        let dayHSR = creatanelemn("div", classy, "", "", "", "", "", "", "", "", "", "");
+        let paRa = keysTotsKeys[i];
+        if (seven_days[keysTotsKeys[i]] !== undefined) {
+          let rRr = "";
+          for (var x = 0; x < seven_days[keysTotsKeys[i]].length; x++) {
+            let letter = seven_days[keysTotsKeys[i]][x].replace("#", "\"");
+            letter = letter.replace("%", "'");
+            rRr += letter;
+            if (x < (seven_days[keysTotsKeys[i]].length - 1)) {
+              rRr += ", ";
+            }
+            else {
+              rRr += ".";
+            }
+          }
+          paRa += "\n7 Days crushing: " + rRr;
+        }
+        if (twght_days[keysTotsKeys[i]] !== undefined) {
+          let rRr = "";
+          for (var x = 0; x < twght_days[keysTotsKeys[i]].length; x++) {
+            let letter = twght_days[keysTotsKeys[i]][x].replace("#", "\"");
+            letter = letter.replace("%", "'");
+            rRr += letter;
+            if (x < (twght_days[keysTotsKeys[i]].length - 1)) {
+              rRr += ", ";
+            }
+            else {
+              rRr += ".";
+            }
+          }
+          paRa += "\n28 Days crushing: " + rRr;
+        }
+        let txt = "#" + (i + 1);
+        let ptxt = creatanelemn("p", "nDsvp", "", "", "", "", "", "", "", "", "", txt);
+        if (i == 0) {
+          ptxt.style = "font-size:25px;color: rgb(0, 200, 0);"
+        }
+        else {
+          ptxt.style = "font-size:25px;"
+        }
+        let numbDiv = creatanelemn("div", "nDsv", "", "", "", "", "", "", ptxt, "", "", "");
+        dayHSR.appendChild(numbDiv);
+        ///spliter
+        let brdr = creatanelemn("div", "brdr", "", "", "", "", "", "", "", "", "", "");
+        dayHSR.appendChild(brdr);
+        ///
+        let ptxtSR = creatanelemn("p", "nDsvSRp", "", "", "", "", "", "", "", "", "", paRa);
+        if (i == 0) {
+          ptxtSR.style = "margin: 0 0 0 10px;text-align:left;color: rgb(0, 200, 0);"
+        }
+        else {
+          ptxtSR.style = "margin: 0 0 0 10px;text-align:left;";
+        }
+        let numbDivSR = creatanelemn("div", "nDsvSR", "", "", "", "", "", "", ptxtSR, "", "", "");
+        dayHSR.appendChild(numbDivSR);
+        holDer.appendChild(dayHSR);
+      }
+      document.getElementById('listDays').appendChild(holDer);
+      let d = new Date();
+      let tday = d.getDate() + "/" + (d.getMonth() + 1) + "/" + d.getFullYear();
+      let content = "Today you have:";
+      if (keysTotsKeys[0] == tday) {
+        if (seven_days[keysTotsKeys[0]] !== undefined) {
+          let rRr = "";
+          for (var x = 0; x < seven_days[keysTotsKeys[0]].length; x++) {
+            let letter = seven_days[keysTotsKeys[0]][x].replace("#", "\"");
+            letter = letter.replace("%", "'");
+            rRr += letter;
+            if (x < (seven_days[keysTotsKeys[0]].length - 1)) {
+              rRr += ", ";
+            }
+            else {
+              rRr += ".";
+            }
+          }
+          content += "\n7 Days crushing: " + rRr;
+        }
+        if (twght_days[keysTotsKeys[0]] !== undefined) {
+          let rRr = "";
+          for (var x = 0; x < twght_days[keysTotsKeys[0]].length; x++) {
+            let letter = twght_days[keysTotsKeys[0]][x].replace("#", "\"");
+            letter = letter.replace("%", "'");
+            rRr += letter;
+            if (x < (twght_days[keysTotsKeys[0]].length - 1)) {
+              rRr += ", ";
+            }
+            else {
+              rRr += ".";
+            }
+          }
+          content += "\n28 Days crushing: " + rRr;
+        }
+        ayanotifiys("REMINDER", content, "shoenotiynow");
+      }
+      window.localStorage.setItem("histore", histore);
+    }
+    function parseDDMMYYYY(dateString) {
+        const parts = dateString.split('/');
+        const day = parseInt(parts[0], 10);
+        const month = parseInt(parts[1], 10) - 1;
+        const year = parseInt(parts[2], 10);
+        return new Date(year, month, day);
+    }
+    function dateComparator(a, b) {
+        const dateA = parseDDMMYYYY(a);
+        const dateB = parseDDMMYYYY(b);
+        return dateA.getTime() - dateB.getTime();
+    }
+    function closePanel(id) {
+      document.getElementById('addinFrm').remove();
+    }
+    async function ayanotifiys(title, content, callback) {
+      const elem = document.getElementsByClassName('notificatins').length;
+      const elems = document.getElementsByClassName('notificatinsf').length;
+      const count = elem + elems;var monteris;
+      const idiv = "notify" + count;closeid = "notifyclosy" + count;
+      if (windowWidth > 600) {
+        //show it from right
+        const clobtn = await creatanelemn("input", "notifyclosy", closeid, "", "", "", "button", "X", "", "closenotifi(this.id)", "", "");
+        const titlep = await creatanelemn("p", "notifytitle", "", "", "", "", "", "", "", "", "", title);
+        const contentx = await creatanelemn("p", "notifycontnt", "", "", "", "", "", "", "", "", "", content);
+        const notificatins = await creatanelemn("div", "notificatins", idiv, "", "", "", "", "", titlep, "", "", "");
+        notificatins.appendChild(contentx);notificatins.appendChild(clobtn);
+        document.getElementById('karive').appendChild(notificatins);
+        monteris = 0-270;
+        shoenotiynow(monteris, idiv, "hidentermnite");
+      }
+      else {
+        //show it form top
+        const clobtn = await creatanelemn("input", "notifyclosy", closeid, "", "", "", "button", "X", "", "closenotifi(this.id)", "", "");
+        const titlep = await creatanelemn("p", "notifytitle", "", "", "", "", "", "", "", "", "", title);
+        const contentx = await creatanelemn("p", "notifycontnt", "", "", "", "", "", "", "", "", "", content);
+        const notificatins = await creatanelemn("div", "notificatinsf", idiv, "", "", "", "", "", titlep, "", "", "");
+        notificatins.appendChild(contentx);notificatins.appendChild(clobtn);
+        document.getElementById('karive').appendChild(notificatins);
+        monteris = 0-270;
+        return shoenotiynow(monteris, idiv, "hidentermnite");
+      }
+      return true;
+    }
+    function shoenotiynow(monteris, idiv, callback) {
+      if (windowWidth > 600) {
+        var inerd = setInterval(function () {
+          if (monteris < 20) {
+            document.getElementById(idiv).style.right = monteris + "px";
+            monteris += 2.7;
+          }
+          else {
+            document.getElementById(idiv).style.right = 20 + "px";
+            clearInterval(inerd);
+          }
+        }, 10);
+        return hidentermnite("deletenotify")
+      }
+      else {
+        var interv = setInterval(function () {
+          if (monteris < 20) {
+            document.getElementById(idiv).style.top = monteris + "px";
+            monteris += 2.7
+          }
+          else {
+            document.getElementById(idiv).style.top = 20 + "px";
+            clearInterval(interv);
+          }
+        }, 10);
+        return hidentermnite("deletenotify")
+      }
+      mksound("https://mirakski.github.io/SiloOfOuargla/js/finished.mp3");
+    }
+    function mksound(arg) {
+      const audio = new Audio(arg);
+      audio.play();
+    }
+    var interx;
+    function hidentermnite(callback) {
+      var x = 0
+      interx = setInterval(function () {
+        if (x < 100) {
+          x += 1;
+        }
+        else {
+          clearInterval(interx);
+          hidthempro();
+        }
+      }, 100);
+    }
+    function hidthempro() {
+      var elem = document.getElementsByClassName('notificatins').length;
+      var elems = document.getElementsByClassName('notificatinsf').length;
+      var length = elem + elems;
+      if (windowWidth > 600) {
+        monteris = 20;
+        interd = setInterval(function () {
+          if (monteris > 0-270) {
+            try {
+              document.getElementById("notify"+0).style.right = monteris + "px";
+              monteris -= 2.7;
+            } catch (e) {
+              try {
+                clearInterval(intersk);
+              } catch (e) {} finally {}
+              try {
+                clearInterval(interm);//
+              } catch (e) {} finally {}
+              try {
+                clearInterval(interd);//
+              } catch (e) {} finally {}
+              try {
+                clearInterval(interx);//
+              } catch (e) {} finally {}
+            } finally {}
+          }
+          else {
+            document.getElementById("notify"+0).style.right = 0-270 + "px";
+            clearInterval(interd);deletenotify(length)
+          }
+        }, 10);
+      }
+      else {
+        monteris = 20;
+        interd = setInterval(function () {
+          if (monteris > 0-270) {
+            try {
+              document.getElementById("notify"+0).style.top = monteris + "px";
+              monteris -= 2.7;
+            } catch (e) {
+              try {
+                clearInterval(intersk);
+              } catch (e) {} finally {}
+              try {
+                clearInterval(interm);//
+              } catch (e) {} finally {}
+              try {
+                clearInterval(interd);//
+              } catch (e) {} finally {}
+              try {
+                clearInterval(interx);//
+              } catch (e) {} finally {}
+            } finally {}
+          }
+          else {
+            document.getElementById("notify"+0).style.top = 0-270 + "px";
+            clearInterval(interd);deletenotify(length);
+          }
+        }, 10);
+      }
+    }
+    function deletenotify(length) {
+      var g = 0;
+      intersk = setInterval(function () {
+        if (g < 10) {
+          g += 1
+        }
+        else {
+          for (var i = 0; i < length; i++) {
+            try {
+              document.getElementById("notify"+i).remove();
+            } catch (e) {} finally {}
+            try {
+              clearInterval(intersk);
+            } catch (e) {} finally {}
+            try {
+              clearInterval(interm);//
+            } catch (e) {} finally {}
+            try {
+              clearInterval(interd);//
+            } catch (e) {} finally {}
+            try {
+              clearInterval(interx);//
+            } catch (e) {} finally {}
+            break;
+          }
+        }
+      }, 100);
+    }
+    function closenotifi(btnid) {
+      clearInterval(interx);
+      parid = document.getElementById(btnid).parentElement.getAttribute("id");
+      $("#"+parid).fadeToggle();
+      var t = 0;
+      interm = setInterval(function () {
+        if (t < 5) {
+          t += 1;
+        }
+        else {
+          document.getElementById(parid).remove();
+          try {
+            clearInterval(intersk);
+          } catch (e) {} finally {}
+          try {
+            clearInterval(interm);
+          } catch (e) {} finally {}
+          try {
+            clearInterval(interd);
+          } catch (e) {} finally {}
+        }
+      }, 100);
+    }
+  </script>
+</html>
