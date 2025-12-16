@@ -2,9 +2,9 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
-    <title>7/28 Days</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>7/28 Days</title>
     <style media="screen">
       html {padding: 0;margin: 0;}
       body {display: grid;justify-content: center;place-items:center;min-width: 95%;padding: 10px;margin: 0;}
@@ -14,7 +14,7 @@
       .holDiv {position:absolute;top:50%;left:50%;background:white;display:grid;min-width:400px;min-height: 100px;
         transform: translate(-50%,-50%);border-radius: 15px;justify-content: center;
       }
-      .hrDiv {width:100%;position: relative;display: flex;min-height: 40px;justify-content: space-around;margin: 3px 10px;}
+      .hrDiv {width:98%;position: relative;display: flex;min-height: 40px;justify-content: space-around;margin: 3px 8px;}
       .addday {width: 250px;font-size: 1.2rem;border-radius: 10px;height: 50px;border: 1px solid rgb(20,200,120);transition: 0.2s;}
       .addday:hover {background: rgb(20,200,120);color: white;cursor: pointer;}
       .listDays {width: 80%;display: grid;justify-content: center;}
@@ -44,11 +44,12 @@
   <body id="karive">
     <input type="button" class="addday" onclick="builder()" value="Add New!">
     <div class="listDays" id="listDays"></br></div>
+    <input type="button" class="addday" id="clrBtn" style="display:none;" onclick="clrdiag()" value="CLEAR!">
   </body>
   <script type="text/javascript">
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);//if phone its true
     let windowHeight = window.innerHeight - 60;let histore = "", docu = new Object();
-    var windowWidth = window.innerWidth;
+    var windowWidth = window.innerWidth;let totsKeys;
     if (typeof(Storage) !== "undefined") {
       //window.localStorage.setItem("histore", null);
       tmp_hstr = window.localStorage.getItem("histore");
@@ -320,21 +321,21 @@
       ///add foreach
       let seday = Object.keys(seven_days);
       let ghday = Object.keys(twght_days);
-      let totsKeys = new Object();
+      totsKeys = new Object();
       for (var i = 0; i < seday.length; i++) {
         if (totsKeys[seday[i]] === undefined) {
-          totsKeys[seday[i]] = 1;
+          totsKeys[seday[i]] = [seven_days[seday[i]]];
         }
         else {
-          totsKeys[seday[i]]++;
+          totsKeys[seday[i]].push(seven_days[seday[i]]);
         }
       }
       for (var i = 0; i < ghday.length; i++) {
         if (totsKeys[ghday[i]] === undefined) {
-          totsKeys[ghday[i]] = 1;
+          totsKeys[ghday[i]] = [twght_days[ghday[i]]];
         }
         else {
-          totsKeys[ghday[i]]++;
+          totsKeys[ghday[i]].push(twght_days[ghday[i]]);
         }
       }
       let keysTotsKeys = Object.keys(totsKeys);
@@ -381,12 +382,12 @@
           paRa += "\n28 Days crushing: " + rRr;
         }
         let txt = "#" + (i + 1);
-        let ptxt = creatanelemn("p", "nDsvp", "", "", "", "", "", "", "", "", "", txt);
+        let ptxt = creatanelemn("p", "nDsvp", keysTotsKeys[i], "", "", "", "", "", "", "openElediag(this.id)", "", txt);
         if (i == 0) {
-          ptxt.style = "font-size:25px;color: rgb(0, 200, 0);"
+          ptxt.style = "font-size:25px;color: rgb(0, 200, 0);cursor: pointer;"
         }
         else {
-          ptxt.style = "font-size:25px;"
+          ptxt.style = "font-size:25px;cursor: pointer;"
         }
         let numbDiv = creatanelemn("div", "nDsv", "", "", "", "", "", "", ptxt, "", "", "");
         dayHSR.appendChild(numbDiv);
@@ -442,7 +443,68 @@
         }
         ayanotifiys("REMINDER", content, "shoenotiynow");
       }
+      document.getElementById('clrBtn').style.display = "block";
       window.localStorage.setItem("histore", histore);
+    }
+    function openElediag(date) {
+      //start here
+      //totsKeys[date] // returns an array of names (use with: docu).
+      let xBtn = creatanelemn("input", "clsBtn", "", "", "", "", "button", "X", "", "closePanel('viewinplate')", "", "");
+      let xPara = creatanelemn("p", "", "", "", "", "", "", "", "", "", "", "Detailed View");
+      let hrDer = creatanelemn("div", "hrDiv", "", "", "", "", "", "", xBtn, "", "", "");
+      hrDer.appendChild(xPara);
+      let holDer = creatanelemn("div", "holDiv", "", "", "", "", "", "", hrDer, "", "", "");
+      holDer.setAttribute("style", "max-height:" + (windowHeight * 0.87) + "px;")
+      let d = new Date();
+      let todayms = d.getTime();
+      ////
+      let names = totsKeys[date];
+      for (var y = 0; y < names.length; y++) {
+        let rty = names[y];
+        for (var i = 0; i < rty.length; i++) {
+          let text = "Name: " + rty[i] + "\nDate Of Pouring: " + docu[rty[i]][0];
+          if (docu[rty[i]][1] != "" && docu[rty[i]][1] != " ") {
+            text += "\nComment: " + docu[rty[i]][1] + ".";
+          }
+          else {
+            text += ".";
+          }
+          /*
+          let predat = docu[rty[i]][0].split("/");
+          let pred = new Date(eval(predat[2]), eval(predat[1] - 1), eval(predat[0]));
+          let deysBetween = Math.floor((todayms - pred.getTime()) / (1000 * 60 * 60 * 24));
+          */
+          let xParaSR = creatanelemn("p", "", "", "", "", "", "", "", "", "", "", text);
+          let hrDer = creatanelemn("div", "hrDiv", "", "", "", "", "", "", xParaSR, "", "", "");
+          holDer.appendChild(hrDer);
+        }
+      }
+      let bckDer = creatanelemn("div", "addinFrm", "viewinplate", "", "", "", "", "", holDer, "", "", "");
+      document.getElementsByTagName('body')[0].appendChild(bckDer);
+    }
+    function clrdiag() {
+      let xBtn = creatanelemn("input", "clsBtn", "", "", "", "", "button", "X", "", "closePanel('clrdiag')", "", "");
+      let xPara = creatanelemn("p", "", "", "", "", "", "", "", "", "", "", "CLEAR CONFORMATION!");
+      let hrDer = creatanelemn("div", "hrDiv", "", "", "", "", "", "", xBtn, "", "", "");
+      hrDer.appendChild(xPara);
+      let holDer = creatanelemn("div", "holDiv", "", "", "", "", "", "", hrDer, "", "", "");
+      //clrdiag
+      let xParaSR = creatanelemn("p", "", "", "", "", "", "", "", "", "", "", "ARE YOU SURE YOU WANT TO CLEAR EVERYTHING!");
+      let hrDerSR = creatanelemn("div", "hrDiv", "", "", "", "", "", "", xParaSR, "", "", "");
+      holDer.appendChild(hrDerSR);
+      let xSubmit = creatanelemn("input", "setBtn", "", "", "", "", "button", "YES!", "", "clearEverything()", "", "");
+      let xSubmitSR = creatanelemn("input", "setBtn", "", "", "", "", "button", "NO", "", "closePanel('clrdiag')", "", "");
+      let hrDerSD = creatanelemn("div", "hrDiv", "", "", "", "", "", "", xSubmit, "", "", "");
+      hrDerSD.appendChild(xSubmitSR);holDer.appendChild(hrDerSD);
+      let bckDer = creatanelemn("div", "addinFrm", "clrdiag", "", "", "", "", "", holDer, "", "", "");
+      document.getElementsByTagName('body')[0].appendChild(bckDer);
+    }
+    function clearEverything() {
+      document.getElementById('clrBtn').style.display = "none";
+      document.getElementById('listDays').innerHTML = "";
+      window.localStorage.removeItem("histore");
+      docu = new Object();histore = "";
+      closePanel('clrdiag');
     }
     function parseDDMMYYYY(dateString) {
         const parts = dateString.split('/');
@@ -457,7 +519,7 @@
         return dateA.getTime() - dateB.getTime();
     }
     function closePanel(id) {
-      document.getElementById('addinFrm').remove();
+      document.getElementById(id).remove();
     }
     async function ayanotifiys(title, content, callback) {
       const elem = document.getElementsByClassName('notificatins').length;
