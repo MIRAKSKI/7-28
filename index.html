@@ -39,10 +39,22 @@
       .notifyclosy:hover{color: red;}
       .notifytitle{color: rgb(100,100,100);font-weight: bold;font-size: 18px;text-align: center;margin:  20px 0 5px 0;}
       .notifycontnt{color: rgba(100,100,100,0.95);margin:  5px 0 5px 0;}
+      table {font-family: arial;border-collapse: collapse;width: 100%;font-size: 0.9rem;background: white;}
+      tr:nth-child(even) {background-color: #dddddd;}
+      td, th {border: 0.1rem solid #dddddd;text-align: center;word-wrap: break-word;padding: 0;padding: 0.2rem;height: 2rem;min-width: 7rem;text-align: center;}
+      .swipeBTN {border-radius: 50%;width: 75px;height: 75px;border: 1px solid rgb(20,200,150);transition: 0.2s;margin: 0 5px;
+        font-size: 1rem;font-weight: bold;
+      }
+      .swipeBTN:hover {border: 1px solid rgb(200,150,20);background: rgb(20,200,150);color: white;cursor: pointer;}
+      .view {margin: 4px 0;}
+      .battey {display:grid;margin: 0 3px;}
+      .axey {display:flex;}
     </style>
   </head>
   <body id="karive">
     <input type="button" class="addday" onclick="builder()" value="Add New!">
+    <div id="tableCon"></div>
+    <div class="listDays" id="swipanel"></br></div>
     <div class="listDays" id="listDays"></br></div>
     <input type="button" class="addday" id="clrBtn" style="display:none;" onclick="clrdiag()" value="CLEAR!">
   </body>
@@ -339,7 +351,46 @@
         }
       }
       let keysTotsKeys = Object.keys(totsKeys);
+      DetailedObj = new Object();
       keysTotsKeys.sort(dateComparator);
+      let row_len = Math.ceil(docKeys / 7), ind = 0;
+      for (var i = 0; i < row_len; i++) {
+        let tabID = "table_" + i;
+        let table = creatanelemn("table", "clss", tabID, "", "", "", "", "", "", "", "", "");
+        for (var y = 0; y < 7; y++) {
+          let day7 = addDatesDays(docu[docKeys[ind]][0], 7), day28 = addDatesDays(docu[docKeys[ind]][0], 28);
+          let tds_arr = [docKeys[ind], docu[docKeys[ind]][0], day7, day28, docu[docKeys[ind]][1]];
+          let rowID = docKeys[ind];DetailedObj[docKeys[ind]] = tds_arr;
+          row = creatanelemn("tr", "", rowID, "", "", "", "", "", "", "openDetailedDiag(this.id)", "", "");
+          for (var i = 0; i < tds_arr.length; i++) {
+            let td = creatanelemn("td", "", "id", "", "", "", "", "", "", "", "", tds_arr[i]);
+            row.appendChild(td);
+          }
+          table.appendChild(row);
+          ind++;
+        }
+        document.getElementById('tableCon').appendChild(table);
+      }
+      try {
+        let divlS = document.createElement('div');
+        divlS.setAttribute('class', "battey");
+        let divppLS = document.createElement('div');
+        divppLS.setAttribute('class', "axeZ");
+        let btnL = document.createElement('input');
+        btnL.setAttribute("onclick", "mobi('L')");btnL.setAttribute("type", "button");
+        btnL.setAttribute("class", "swipeBTN");btnL.setAttribute("value", "<");
+        //
+        let btnR = document.createElement('input');
+        btnR.setAttribute("onclick", "mobi('R')");btnR.setAttribute("type", "button");
+        btnR.setAttribute("class", "swipeBTN");btnR.setAttribute("value", ">");
+        //
+        divppLS.appendChild(btnL);divppLS.appendChild(btnR);
+        divlS.appendChild(divppLS);
+        let diLSV = document.createElement('div');
+        diLSV.setAttribute("class", "view");diLSV.setAttribute("id", "swipeview");
+        diLSV.appendChild(divppLS);
+        document.getElementById('swipanel').appendChild(diLSV);
+      } catch (e) {} finally {
       try {
         document.getElementsByClassName('daysH')[0].remove();
       } catch (e) {} finally {}
@@ -445,6 +496,31 @@
       }
       document.getElementById('clrBtn').style.display = "block";
       window.localStorage.setItem("histore", histore);
+    }
+    function openDetailedDiag(id) {
+      //use id as key on docu/DetailedObj
+    }
+    function addDatesDays(date, days) {
+      let mnts_len = [31,28,31,30,31,30,31,31,30,31,30,31];
+      let dtSeg = date.split("/");
+      let thisMonth = eval(dtSeg[1]), thisYear = eval(dtSeg[2]);
+      let newDay = eval(dtSeg[0]) + eval(days);let newDate = "";
+      if (newDay > mnts_len[thisMonth - 1]) {
+        newDay = newDay - mnts_len[thisMonth - 1];
+        let nextMonth = thisMonth + 1;
+        if (nextMonth > mnts_len.length) {
+          nextMonth = 1;
+          let nextYear = thisYear + 1;
+          newDate = newDay + "/" + nextMonth + "/" + nextYear;
+        }
+        else {
+          newDate = newDay + "/" + nextMonth + "/" + thisYear;
+        }
+      }
+      else {
+        newDate = newDay + "/" + thisMonth + "/" + thisYear;
+      }
+      return newDate;
     }
     function openElediag(date) {
       //start here
