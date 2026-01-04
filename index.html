@@ -53,9 +53,9 @@
   </head>
   <body id="karive">
     <input type="button" class="addday" onclick="builder()" value="Add New!">
-    <div id="tableCon"></div>
-    <div class="listDays" id="swipanel"></br></div>
-    <div class="listDays" id="listDays"></br></div>
+    <div id="tableCon"></br></div>
+    <div class="listDays" id="swipanel"></br></div></br>
+    <div class="listDays" id="listDays"></br></div></br>
     <input type="button" class="addday" id="clrBtn" style="display:none;" onclick="clrdiag()" value="CLEAR!">
   </body>
   <script type="text/javascript">
@@ -195,6 +195,7 @@
       docu[daTa["Name"]] = [daTa["Date"], daTa["Comment"]];
       startListing();closePanel("addinFrm");
     }
+
     function startListing() {
       let dates = new Object();let docKeys = Object.keys(docu);
       for (var i = 0; i < docKeys.length; i++) {
@@ -353,24 +354,34 @@
       let keysTotsKeys = Object.keys(totsKeys);
       DetailedObj = new Object();
       keysTotsKeys.sort(dateComparator);
-      let row_len = Math.ceil(docKeys / 7), ind = 0;
+      let row_len = Math.ceil(docKeys.length / 7), ind = 0;
+      document.getElementById('tableCon').innerHTML = "</br>";
       for (var i = 0; i < row_len; i++) {
         let tabID = "table_" + i;
-        let table = creatanelemn("table", "clss", tabID, "", "", "", "", "", "", "", "", "");
+        let tH_arr = ["Number", "Name", "Pouring Date", "7 Days", "28 Days", "Comment"];
+        let tHrow = creatanelemn("tr", "", "", "", "", "", "", "", "", "", "", "");
+        for (var x = 0; x < tH_arr.length; x++) {
+          let th = creatanelemn("th", "", "", "", "", "", "", "", "", "", "", tH_arr[x]);
+          tHrow.appendChild(th);
+        }
+        let table = creatanelemn("table", "clss", tabID, "", "", "", "", "", tHrow, "", "", "");
         for (var y = 0; y < 7; y++) {
-          let day7 = addDatesDays(docu[docKeys[ind]][0], 7), day28 = addDatesDays(docu[docKeys[ind]][0], 28);
-          let tds_arr = [docKeys[ind], docu[docKeys[ind]][0], day7, day28, docu[docKeys[ind]][1]];
-          let rowID = docKeys[ind];DetailedObj[docKeys[ind]] = tds_arr;
-          row = creatanelemn("tr", "", rowID, "", "", "", "", "", "", "openDetailedDiag(this.id)", "", "");
-          for (var i = 0; i < tds_arr.length; i++) {
-            let td = creatanelemn("td", "", "id", "", "", "", "", "", "", "", "", tds_arr[i]);
-            row.appendChild(td);
+          if (docu[docKeys[ind]] !== undefined) {
+            let day7 = addDatesDays(docu[docKeys[ind]][0], 7), day28 = addDatesDays(docu[docKeys[ind]][0], 28);
+            let tds_arr = ["#"+(ind+1), docKeys[ind], docu[docKeys[ind]][0], day7, day28, docu[docKeys[ind]][1]];
+            let rowID = docKeys[ind]; DetailedObj[docKeys[ind]] = tds_arr;
+            row = creatanelemn("tr", "", rowID, "", "", "", "", "", "", "openDetailedDiag(this.id)", "", "");
+            for (var i = 0; i < tds_arr.length; i++) {
+              let td = creatanelemn("td", "", "id", "", "", "", "", "", "", "", "", tds_arr[i]);
+              row.appendChild(td);
+            }
+            table.appendChild(row);
+            ind++;
           }
-          table.appendChild(row);
-          ind++;
         }
         document.getElementById('tableCon').appendChild(table);
       }
+      if (row_len > 1) {
       try {
         let divlS = document.createElement('div');
         divlS.setAttribute('class', "battey");
@@ -390,7 +401,8 @@
         diLSV.setAttribute("class", "view");diLSV.setAttribute("id", "swipeview");
         diLSV.appendChild(divppLS);
         document.getElementById('swipanel').appendChild(diLSV);
-      } catch (e) {} finally {
+      } catch (e) {} finally {}
+      }
       try {
         document.getElementsByClassName('daysH')[0].remove();
       } catch (e) {} finally {}
@@ -500,6 +512,7 @@
     function openDetailedDiag(id) {
       //use id as key on docu/DetailedObj
     }
+
     function addDatesDays(date, days) {
       let mnts_len = [31,28,31,30,31,30,31,31,30,31,30,31];
       let dtSeg = date.split("/");
